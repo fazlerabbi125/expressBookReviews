@@ -20,16 +20,17 @@ public_users.post("/register", (req,res) => {
 });
 
 // Get the book list available in the shop
-public_users.get('/',function (req, res) {
+public_users.get('/', async function (req, res) {
   //Write your code here
-  res.send(JSON.stringify(books, null, 4));
+  const awaited_books = await Promise.resolve(books)
+  res.send(JSON.stringify(awaited_books, null, 4));
 });
 
 // Get book details based on ISBN
-public_users.get('/isbn/:isbn',function (req, res) {
+public_users.get('/isbn/:isbn', async function (req, res) {
   //Write your code here
   isbn = req.params.isbn;
-  const book = books?.[isbn];
+  const book = (await Promise.resolve(books))?.[isbn];
   if (!book){
     return res.status(404).json({message: "Book not found"})
   }
@@ -37,11 +38,12 @@ public_users.get('/isbn/:isbn',function (req, res) {
  });
   
 // Get book details based on author
-public_users.get('/author/:author',function (req, res) {
+public_users.get('/author/:author', async function (req, res) {
   //Write your code here
   const author = req.params.author;
   const result = []
-  for (const bookId of Object.keys(books)){
+  const awaited_books = await Promise.resolve(books)
+  for (const bookId of Object.keys(awaited_books)){
     if (books[bookId]?.author===author){
         result.push(books[bookId])
     }
@@ -53,10 +55,11 @@ public_users.get('/author/:author',function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title',async function (req, res) {
   //Write your code here
   const title = req.params.title;
-  for (const bookId of Object.keys(books)){
+  const awaited_books = await Promise.resolve(books)
+  for (const bookId of Object.keys(awaited_books)){
     if (books[bookId]?.title===title){
         return res.send(books[bookId])
     }
